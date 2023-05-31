@@ -1,10 +1,14 @@
 import 'dart:math';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:ledcubeapp/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+// Splash screen libs
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:page_transition/page_transition.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,20 +26,47 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FutureBuilder(
-        future: _fbApp,
-        builder: (context, snapshot) {
-          if(snapshot.hasError) {
-            print("ERROR FLUTTER: ${snapshot.error.toString()}");
-            return const Text("Something went wrong.");
+      home: AnimatedSplashScreen(
+        duration: 2000,
+        splash: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "Microlux",
+              style: GoogleFonts.poppins(
+                color: const Color.fromARGB(255, 241, 245, 255),
+                fontSize: 36.0,
+                fontWeight: FontWeight.w600,
+              )
+            ),
+            Text(
+              "Innovative Advertising",
+              style: GoogleFonts.cookie(
+                color: const Color.fromARGB(255, 241, 245, 255),
+                fontSize: 19.0,
+                fontWeight: FontWeight.w400,
+              )
+            ),
+          ]
+        ),
+        splashTransition: SplashTransition.fadeTransition,
+        pageTransitionType: PageTransitionType.fade,
+        backgroundColor: Colors.blue,
+        nextScreen: FutureBuilder(
+          future: _fbApp,
+          builder: (context, snapshot) {
+            if(snapshot.hasError) {
+              debugPrint("ERROR FLUTTER: ${snapshot.error.toString()}");
+              return const Text("Something went wrong.");
+            }
+            else if(snapshot.hasData){
+              return const MyHomePage(title: "LED Cube App");
+            }
+            else {
+              return const Center(child: CircularProgressIndicator());
+            }
           }
-          else if(snapshot.hasData){
-            return const MyHomePage(title: "LED Cube App");
-          }
-          else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        }
+        ),
       )
     );
   }
@@ -70,26 +101,37 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // ElevatedButton(
-              //   onPressed: () {
-              //     testRef.set("Hello World ${Random().nextInt(100)}");
-              //   },
-              //   child: Text("Send to Firebase")
-              // ),
-              const SizedBox(height: 5.0),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    testRefChild
-                      .set({
-                        'on': true,
-                        'off': false,
-                      });
-                  } catch (e) {
-                    print("ERROR: $e");
-                  }
-                },
-                child: Text("Set LED State")
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        testRefChild
+                          .set({
+                            'on': true,
+                          });
+                      } catch (e) {
+                        print("ERROR: $e");
+                      }
+                    },
+                    child: Text("Start")
+                  ),
+                  const SizedBox(width: 10.0),
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        testRefChild
+                          .set({
+                            'on': false,
+                          });
+                      } catch (e) {
+                        print("ERROR: $e");
+                      }
+                    },
+                    child: Text("Stop")
+                  ),
+                ],
               ),
             ],
           )
