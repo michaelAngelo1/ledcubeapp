@@ -43,6 +43,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   final rtdb = FirebaseDatabase.instance.ref();
+  bool animationState = false;
   bool ledState = false;
   late Future<City> animationData;
   late Future<List<String>> animationList;
@@ -79,50 +80,74 @@ class _MyHomePageState extends State<MyHomePage> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: defaultPadding),
+          padding: const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(height: 10.0),
-              Switch(
-                value: ledState,
-                activeColor: Colors.blue,
-                onChanged: (bool value) async {
-                  setState(() {
-                    ledState = value;
-                    testRefChild.set({
-                      'on': ledState,
-                    });
-                    debugPrint(ledState.toString());
-                  });
-                }
-              ),
               const SizedBox(height: 10.0),
-              FutureBuilder<City>(
-                future: animationData,
-                builder: (context, snapshot) {
-                  if(snapshot.hasData) {
-                    return Text(snapshot.data!.name);
-                  }
-                  return const CircularProgressIndicator();
-                }
-              ),
               Expanded(
                 child: FutureBuilder<List<String>>(
                   future: animationList,
                   builder: (context, snapshot) {
                     if(snapshot.hasData) {
                       return ListView.builder(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8), 
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
                           return Container(
-                            height: 50,
-                            color: Colors.blue,
+                            margin: const EdgeInsets.only(bottom: defaultPadding),
+                            height: 75,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(35),
+                              color: animationState ? Colors.green : Colors.blue,
+                            ),
                             child: InkWell(
-                              onTap: () {},
+                              onTap: () async {
+                                setState(() {
+                                  animationState = !animationState;
+                                  testRefChild.set({
+                                    'on': animationState,
+                                  });
+                                  debugPrint(animationState.toString());
+                                });
+                              },
                               child: Center(
-                                child: Text(snapshot.data![index]),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(defaultPadding + 8),
+                                      child: Text(
+                                        snapshot.data![index],
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15.0,
+                                          fontWeight: FontWeight.w600,
+                                        )
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Container(
+                                        color: Colors.transparent,
+                                        width: 100,
+                                      )
+                                    ),
+                                    // Switch(
+                                    //   value: animationState,
+                                    //   activeColor: Colors.white,
+                                    //   onChanged: (bool value) async {
+                                    //     setState(() {
+                                    //       animationState = value;
+                                    //       testRefChild.set({
+                                    //         'on': animationState,
+                                    //       });
+                                    //       debugPrint(animationState.toString());
+                                    //     });
+                                    //   }
+                                    // ),
+                                  ],
+                                ),
                               )
                             )
                           );
@@ -136,7 +161,22 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           )
         )
-      )
+      ),
+      floatingActionButton: SizedBox(
+        width: 70,
+        height: 70,
+        child: FittedBox(
+          child: FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                ledState = !ledState;
+              });
+            },
+            child: Icon(ledState ? Icons.pause : Icons.play_arrow),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
