@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ledcubeapp/constants.dart';
+import 'package:ledcubeapp/controller/handle_choose_animation.dart';
+import 'package:ledcubeapp/controller/handle_play_animation.dart';
 import 'package:ledcubeapp/model/indicator_rtdb_model.dart';
 import 'package:ledcubeapp/model/selected_rtdb_model.dart';
 
@@ -51,7 +53,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   final rtdb = FirebaseDatabase.instance.ref();
-  bool ledState = false;
   late Future<City> animationData;
   late Future<List<String>> animationList;
 
@@ -73,29 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void handlePlayAnimation(DatabaseReference indicatorChild) {
-      setState(() {
-        indicatorChild.set({
-          'on': !Indicator.on
-        });
-        Indicator.on = !Indicator.on;
-      });
-  }
-
-  void handleChooseAnimation(DatabaseReference ledStateChild, String animationName) {
-      setState(() {
-        ledStateChild.set({
-          'selected': animationName
-        });
-        Selected.animation = animationName;
-      });
-    }
-
   @override
   Widget build(BuildContext context) {
     final ledStateChild = rtdb.child("ledState");
     final indicatorChild = rtdb.child("indicator");
-
     
     return Scaffold(
       appBar: AppBar(
@@ -128,7 +110,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               color: Selected.animation == snapshot.data![index] ? Colors.green : Colors.blue,
                             ),
                             child: InkWell(
-                              onTap: () => handleChooseAnimation(ledStateChild, snapshot.data![index]),
+                              onTap: () => setState(() {
+                                HandleChooseAnimation.handleChooseAnimation(ledStateChild, snapshot.data![index]);
+                              }),
                               child: Center(
                                 child: Row(
                                   children: [
@@ -171,9 +155,11 @@ class _MyHomePageState extends State<MyHomePage> {
         height: 70,
         child: FittedBox(
           child: FloatingActionButton(
-            onPressed: () => handlePlayAnimation(indicatorChild),
+            onPressed: () => setState(() {
+              HandlePlayAnimation.handlePlayAnimation(indicatorChild);
+            }),
             backgroundColor: Indicator.on ? Colors.green : Colors.blue,
-            child: Icon(ledState ? Icons.pause : Icons.play_arrow),
+            child: Icon(Indicator.on ? Icons.pause : Icons.play_arrow),
           ),
         ),
       ),
