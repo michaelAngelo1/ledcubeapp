@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ledcubeapp/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase/db_instance.dart';
 import 'firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -9,12 +9,14 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'pages/home.dart';
+import 'pages/login.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await auth.useAuthEmulator('localhost', 9099);
   runApp(MyApp());
 }
 
@@ -35,7 +37,7 @@ class MyApp extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "Microlux",
+              "Gigalux",
               style: GoogleFonts.poppins(
                 color: const Color.fromARGB(255, 241, 245, 255),
                 fontSize: 36.0,
@@ -63,7 +65,7 @@ class MyApp extends StatelessWidget {
               return const Text("Something went wrong.");
             }
             else if(snapshot.hasData){
-              return const MyHomePage(title: "LED Cube App");
+              return const LoginPage();
             }
             else {
               return const Center(child: CircularProgressIndicator());

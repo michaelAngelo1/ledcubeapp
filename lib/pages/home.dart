@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ledcubeapp/constants.dart';
@@ -55,22 +56,17 @@ class _MyHomePageState extends State<MyHomePage> {
     animationList = getDocumentID();
   }
 
+  // Watch user state
+  final user = FirebaseAuth.instance.currentUser!;
+
+  void userSignOut() {
+    FirebaseAuth.instance.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     // final testRef = db.child("test");
     final testRefChild = rtdb.child("ledState");
-
-    // Firestore db
-    final cities = db.collection("test cities");
-    final data1 = <String, dynamic>{
-      "name": "San Francisco",
-      "state": "CA",
-      "country": "USA",
-      "capital": false,
-      "population": 860000,
-      "regions": ["west_coast", "norcal"]
-    };
-    cities.doc("SF").set(data1);
 
     return Scaffold(
       appBar: AppBar(
@@ -133,19 +129,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                         width: 100,
                                       )
                                     ),
-                                    // Switch(
-                                    //   value: animationState,
-                                    //   activeColor: Colors.white,
-                                    //   onChanged: (bool value) async {
-                                    //     setState(() {
-                                    //       animationState = value;
-                                    //       testRefChild.set({
-                                    //         'on': animationState,
-                                    //       });
-                                    //       debugPrint(animationState.toString());
-                                    //     });
-                                    //   }
-                                    // ),
                                   ],
                                 ),
                               )
