@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:ledcubeapp/constants.dart';
+import 'package:ledcubeapp/model/indicator_rtdb_model.dart';
+import 'package:ledcubeapp/model/selected_rtdb_model.dart';
 
 import '../firebase/firestore_objects.dart';
 
@@ -33,6 +35,11 @@ Future<List<String>> getDocumentID() async {
   return documentIds;
 }
 
+Future<Object> isSelectedAnimation(DatabaseReference ledStateChild, String animation) async {
+  final snap = await ledStateChild.get();
+  return snap.value!;  
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
@@ -44,7 +51,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   final rtdb = FirebaseDatabase.instance.ref();
-  bool animationState = false;
   bool ledState = false;
   late Future<City> animationData;
   late Future<List<String>> animationList;
@@ -54,20 +60,43 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     animationData = fetchCity();  
     animationList = getDocumentID();
+    Indicator.indicatorOnValueListen(rtdb.child("indicator"));
+    Selected.selectedOnValueListen(rtdb.child('ledState'));
   }
 
   // Watch user state
-  final user = FirebaseAuth.instance.currentUser!;
+  final user = FirebaseAuth.instance.currentUser;
 
   void userSignOut() {
-    FirebaseAuth.instance.signOut();
+    if(user != null) {
+      FirebaseAuth.instance.signOut();
+    }
   }
+
+  void handlePlayAnimation(DatabaseReference indicatorChild) {
+      setState(() {
+        indicatorChild.set({
+          'on': !Indicator.on
+        });
+        Indicator.on = !Indicator.on;
+      });
+  }
+
+  void handleChooseAnimation(DatabaseReference ledStateChild, String animationName) {
+      setState(() {
+        ledStateChild.set({
+          'selected': animationName
+        });
+        Selected.animation = animationName;
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
-    // final testRef = db.child("test");
-    final testRefChild = rtdb.child("ledState");
+    final ledStateChild = rtdb.child("ledState");
+    final indicatorChild = rtdb.child("indicator");
 
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -96,18 +125,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             height: 75,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(35),
-                              color: animationState ? Colors.green : Colors.blue,
+                              color: Selected.animation == snapshot.data![index] ? Colors.green : Colors.blue,
                             ),
                             child: InkWell(
-                              onTap: () async {
-                                setState(() {
-                                  animationState = !animationState;
-                                  testRefChild.set({
-                                    'on': animationState,
-                                  });
-                                  debugPrint(animationState.toString());
-                                });
-                              },
+                              onTap: () => handleChooseAnimation(ledStateChild, snapshot.data![index]),
                               child: Center(
                                 child: Row(
                                   children: [
@@ -150,11 +171,8 @@ class _MyHomePageState extends State<MyHomePage> {
         height: 70,
         child: FittedBox(
           child: FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                ledState = !ledState;
-              });
-            },
+            onPressed: () => handlePlayAnimation(indicatorChild),
+            backgroundColor: Indicator.on ? Colors.green : Colors.blue,
             child: Icon(ledState ? Icons.pause : Icons.play_arrow),
           ),
         ),

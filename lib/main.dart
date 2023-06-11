@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
               return const Text("Something went wrong.");
             }
             else if(snapshot.hasData){
-              return const LoginPage();
+              return const MyHomePage(title: 'test homepage');
             }
             else {
               return const Center(child: CircularProgressIndicator());
