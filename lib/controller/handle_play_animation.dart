@@ -3,7 +3,9 @@ import 'package:ledcubeapp/model/indicator_rtdb_model.dart';
 
 class HandlePlayAnimation {
   static void handlePlayAnimation(DatabaseReference indicatorChild) {
-    indicatorChild.set({'on': !Indicator.on});
+    indicatorChild.update({
+      'on': !Indicator.on
+    });
     Indicator.on = !Indicator.on;
   }
 }

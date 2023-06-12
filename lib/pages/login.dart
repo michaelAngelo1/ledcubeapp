@@ -1,8 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:ledcubeapp/constants.dart';
-
-import '../firebase/db_instance.dart';
+import 'package:ledcubeapp/firebase/db_instance.dart';
+import 'package:ledcubeapp/pages/home.dart';
+import 'package:ledcubeapp/pages/signup.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,78 +15,20 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  void userSignIn() async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      }
-    );
-
-    try {
-      await auth.signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-      Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
-      
-      print("INI ECODENYA COK: " + e.code);
-      if(e.code == "user-not-found") {
-        print("SALAH EMAIL COKKKKKKKK!1!1!1!1");
-        return;
-      }
-      else if(e.code == 'wrong-password') {
-        print("SALAH PASSWORD COKKKKKKKK!1!1!1!1");
-        return;
-      }
-      print("MASUKK COKKKKKKKK!1!1!1!1");
-    }
-  }
-
-  void wrongEmailMessage() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const AlertDialog(
-          backgroundColor: Colors.deepPurple,
-          title: Center(
-            child: Text(
-              'Incorrect Email',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void wrongPasswordMessage() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const AlertDialog(
-          backgroundColor: Colors.deepPurple,
-          title: Center(
-            child: Text(
-              'Incorrect Password',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    
+    // Ref user child
+    final userRef = rtdb.ref();
+
+    // snackbar failed
+    const snackbar = SnackBar(
+      content: Text("Account not found. Please sign up."),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -92,39 +36,72 @@ class _LoginPageState extends State<LoginPage> {
         )
       ),
       body: SizedBox(
-        height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration.collapsed(
-                  hintText: 'Username',
-                ),
-                obscureText: false,
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 100,
+                child: TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    hintText: 'Email',
+                  )
+                )
               ),
               const SizedBox(height: 10.0),
-              TextField(
-                controller: passwordController,
-                decoration: const InputDecoration.collapsed(
-                  hintText: 'Password',
-                ),
-                obscureText: true,
-              ),
-              const SizedBox(height: 20.0),
-              GestureDetector(
-                onTap: userSignIn,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                  child: Text("Sign In"),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 100,
+                child: TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Password',
+                  )
                 )
-              )
+              ),
+              const SizedBox(height: 15.0),
+              ElevatedButton(
+                onPressed: () async {
+                  final emailSnapshot = await userRef.child('users/email').get();
+                  final passwordSnapshot = await userRef.child('users/password').get();
+                  if(emailSnapshot.value.toString() == _emailController.text && passwordSnapshot.value.toString() == _passwordController.text) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const MyHomePage(title: "LED Cube App"),
+                      )
+                    );
+                  }
+                  else {
+                    print("user not found");
+                    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                  }
+                },
+                child: const Text('Login'),
+              ),
+              const SizedBox(height: 5.0),
+              const Divider(),
+              const SizedBox(height: 10.0),
+              Text("Don't have an account?"),
+              const SizedBox(height: 10.0),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SignUpPage(),
+                    )
+                  );
+                },
+                child: const Text('Sign up'),
+              ),
             ]
           )
-        ),
+        )
       )
     );
   }

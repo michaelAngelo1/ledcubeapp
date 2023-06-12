@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     animationData = fetchCity();  
     animationList = getDocumentID();
-    Indicator.indicatorOnValueListen(rtdb.child("indicator"));
+    Indicator.indicatorOnValueListen(rtdb.child("ledState"));
     Selected.selectedOnValueListen(rtdb.child('ledState'));
   }
 
@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final ledStateChild = rtdb.child("ledState");
-    final indicatorChild = rtdb.child("indicator");
+    final indicatorChild = rtdb.child("ledState");
     
     return Scaffold(
       appBar: AppBar(

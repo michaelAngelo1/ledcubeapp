@@ -3,7 +3,7 @@ import 'package:ledcubeapp/model/selected_rtdb_model.dart';
 
 class HandleChooseAnimation {
     static void handleChooseAnimation(DatabaseReference ledStateChild, String animationName) {
-        ledStateChild.set({
+        ledStateChild.update({
           'selected': animationName
         });
         Selected.animation = animationName;
