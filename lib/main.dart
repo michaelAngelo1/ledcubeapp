@@ -21,9 +21,16 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final Future<FirebaseApp> _fbApp = Firebase.initializeApp();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -34,26 +41,32 @@ class MyApp extends StatelessWidget {
       ),
       home: AnimatedSplashScreen(
         duration: 2000,
-        splash: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              "Gigalux",
-              style: GoogleFonts.poppins(
-                color: const Color.fromARGB(255, 241, 245, 255),
-                fontSize: 36.0,
-                fontWeight: FontWeight.w600,
-              )
+        splash: SizedBox(
+          height: 300,
+          width: 300,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Gigalux",
+                  style: GoogleFonts.poppins(
+                    color: const Color.fromARGB(255, 241, 245, 255),
+                    fontSize: 36.0,
+                    fontWeight: FontWeight.w600,
+                  )
+                ),
+                Text(
+                  "Innovative Advertising",
+                  style: GoogleFonts.cookie(
+                    color: const Color.fromARGB(255, 241, 245, 255),
+                    fontSize: 19.0,
+                    fontWeight: FontWeight.w400,
+                  )
+                ),
+              ]
             ),
-            Text(
-              "Innovative Advertising",
-              style: GoogleFonts.cookie(
-                color: const Color.fromARGB(255, 241, 245, 255),
-                fontSize: 19.0,
-                fontWeight: FontWeight.w400,
-              )
-            ),
-          ]
+          ),
         ),
         splashTransition: SplashTransition.fadeTransition,
         pageTransitionType: PageTransitionType.fade,
@@ -62,7 +75,6 @@ class MyApp extends StatelessWidget {
           future: _fbApp,
           builder: (context, snapshot) {
             if(snapshot.hasError) {
-              debugPrint("ERROR FLUTTER: ${snapshot.error.toString()}");
               return const Text("Something went wrong.");
             }
             else if(snapshot.hasData){

@@ -1,34 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ledcubeapp/constants.dart';
 import 'package:ledcubeapp/controller/handle_choose_animation.dart';
 import 'package:ledcubeapp/controller/handle_play_animation.dart';
 import 'package:ledcubeapp/model/indicator_rtdb_model.dart';
 import 'package:ledcubeapp/model/selected_rtdb_model.dart';
 
-import '../firebase/firestore_objects.dart';
-
 // Firestore global instance
 final db = FirebaseFirestore.instance;
-
-// Read firestore
-Future<City> fetchCity() async {
-  
-  final ref = db.collection("test cities").doc("SF").withConverter(
-      fromFirestore: City.fromFirestore,
-      toFirestore: (City city, _) => city.toFirestore(),
-    );
-
-  final docSnap = await ref.get();
-  final city = docSnap.data(); // Convert to City object
-  if (city != null) {
-    return city;
-  } else {
-    throw Exception("Error reading firestore");
-  }
-}
 
 Future<List<String>> getDocumentID() async {
   CollectionReference collectionReference = db.collection("LAMBDA_8");
@@ -43,8 +24,7 @@ Future<Object> isSelectedAnimation(DatabaseReference ledStateChild, String anima
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -53,25 +33,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   final rtdb = FirebaseDatabase.instance.ref();
-  late Future<City> animationData;
   late Future<List<String>> animationList;
 
   @override
   void initState() {
-    super.initState();
-    animationData = fetchCity();  
+    super.initState(); 
     animationList = getDocumentID();
     Indicator.indicatorOnValueListen(rtdb.child("ledState"));
     Selected.selectedOnValueListen(rtdb.child('ledState'));
-  }
-
-  // Watch user state
-  final user = FirebaseAuth.instance.currentUser;
-
-  void userSignOut() {
-    if(user != null) {
-      FirebaseAuth.instance.signOut();
-    }
   }
 
   @override
@@ -81,7 +50,16 @@ class _MyHomePageState extends State<MyHomePage> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        automaticallyImplyLeading: false,
+        title: Center(
+          child: Text(
+            "Gigalux",
+            style: GoogleFonts.poppins(
+              fontSize: 18.0,
+              fontWeight: FontWeight.w600,
+            )
+          ),
+        ),
       ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -91,7 +69,15 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 20.0),
+              Text(
+                "Choose from the list of animations",
+                style: GoogleFonts.montserrat(
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.blue,
+                )
+              ),
               const SizedBox(height: 10.0),
               Expanded(
                 child: FutureBuilder<List<String>>(
@@ -113,29 +99,27 @@ class _MyHomePageState extends State<MyHomePage> {
                               onTap: () => setState(() {
                                 HandleChooseAnimation.handleChooseAnimation(ledStateChild, snapshot.data![index]);
                               }),
-                              child: Center(
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(defaultPadding + 8),
-                                      child: Text(
-                                        snapshot.data![index],
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.w600,
-                                        )
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 2,
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        width: 100,
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(defaultPadding + 8),
+                                    child: Text(
+                                      snapshot.data![index],
+                                      style: GoogleFonts.montserrat(
+                                        color: Colors.white,
+                                        fontSize: 15.0,
+                                        fontWeight: FontWeight.w600,
                                       )
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(
+                                      color: Colors.transparent,
+                                      width: 100,
+                                    )
+                                  ),
+                                ],
                               )
                             )
                           );
@@ -158,8 +142,11 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () => setState(() {
               HandlePlayAnimation.handlePlayAnimation(indicatorChild);
             }),
-            backgroundColor: Indicator.on ? Colors.green : Colors.blue,
-            child: Icon(Indicator.on ? Icons.pause : Icons.play_arrow),
+            backgroundColor: Indicator.on ? Colors.white : Colors.blue,
+            child: Icon(
+              Indicator.on ? Icons.pause : Icons.play_arrow,
+              color: Indicator.on ? Colors.blue : Colors.white,
+            ),
           ),
         ),
       ),
