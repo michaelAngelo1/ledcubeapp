@@ -117,10 +117,13 @@ class _LoginPageState extends State<LoginPage> {
                   final emailSnapshot = await userRef.child('users/$id/email').get();
                   final passwordSnapshot = await userRef.child('users/$id/password').get();
 
+                  var passwordBytes = utf8.encode(_passwordController.text);
+                  var passwordDigest = sha1.convert(bytes);
+
                   if(_emailController.text.isEmpty && _passwordController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(emptyField);
                   }
-                  else if(emailSnapshot.value.toString() == _emailController.text && passwordSnapshot.value.toString() == _passwordController.text) {
+                  else if(emailSnapshot.value.toString() == _emailController.text && passwordSnapshot.value.toString() == passwordDigest.toString()) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => const MyHomePage(),

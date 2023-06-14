@@ -118,10 +118,12 @@ class _SignUpPageState extends State<SignUpPage> {
                   else {
                     var bytes = utf8.encode(_emailController.text);
                     var digest = sha1.convert(bytes);
+                    var passwordBytes = utf8.encode(_passwordController.text);
+                    var passwordDigest = sha1.convert(bytes);
                     await userRef.update({
                       digest.toString(): {
                         'email': _emailController.text,
-                        'password': _passwordController.text,
+                        'password': passwordDigest.toString(),
                       } 
                     });
                     ScaffoldMessenger.of(context).showSnackBar(signUpSuccess);
