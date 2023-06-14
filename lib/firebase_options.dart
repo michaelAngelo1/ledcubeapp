@@ -44,44 +44,42 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyC0Lfnh27P_KPnfKfxJYIpV5xr6O3XbMww',
-    appId: '1:133652858240:web:137957e5dc5df2016aad65',
-    messagingSenderId: '133652858240',
-    projectId: 'ledcubeapp-db',
-    authDomain: 'ledcubeapp-db.firebaseapp.com',
-    databaseURL: 'https://ledcubeapp-db-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'ledcubeapp-db.appspot.com',
-    measurementId: 'G-STV6F29F4L',
+    apiKey: 'AIzaSyDzdR13UwkMO_d6vHFcdXufZ9Wc5t5-Gro',
+    appId: '1:937618905345:web:fb49835d3632e40c3ca300',
+    messagingSenderId: '937618905345',
+    projectId: 'ledcube-b9645',
+    authDomain: 'ledcube-b9645.firebaseapp.com',
+    databaseURL: 'https://ledcube-b9645-default-rtdb.firebaseio.com',
+    storageBucket: 'ledcube-b9645.appspot.com',
+    measurementId: 'G-6N47Q23E2C',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDcJrL9QMMa5F1rGGBHW4InldEDTvGDoFg',
-    appId: '1:133652858240:android:d9e4b5d1ab1fa9e56aad65',
-    messagingSenderId: '133652858240',
-    projectId: 'ledcubeapp-db',
-    databaseURL: 'https://ledcubeapp-db-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'ledcubeapp-db.appspot.com',
+    apiKey: 'AIzaSyBQzYwXsz0OeG4ZETXuMOgyEWRw37-oKqM',
+    appId: '1:937618905345:android:413f039a8c7735223ca300',
+    messagingSenderId: '937618905345',
+    projectId: 'ledcube-b9645',
+    databaseURL: 'https://ledcube-b9645-default-rtdb.firebaseio.com',
+    storageBucket: 'ledcube-b9645.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAxomw4ziIkbrGgZubx2okyIE02i6Ak1Kg',
-    appId: '1:133652858240:ios:666796fced0fc27f6aad65',
-    messagingSenderId: '133652858240',
-    projectId: 'ledcubeapp-db',
-    databaseURL: 'https://ledcubeapp-db-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'ledcubeapp-db.appspot.com',
-    iosClientId: '133652858240-i4k8ms1sprv2n2ptona8hd5cmm1b8b28.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAL-19-ZZ0eBLviaaddTkIKDZtt_SJ65AM',
+    appId: '1:937618905345:ios:5c39714ec5b6bdf43ca300',
+    messagingSenderId: '937618905345',
+    projectId: 'ledcube-b9645',
+    databaseURL: 'https://ledcube-b9645-default-rtdb.firebaseio.com',
+    storageBucket: 'ledcube-b9645.appspot.com',
     iosBundleId: 'com.example.ledcubeapp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAxomw4ziIkbrGgZubx2okyIE02i6Ak1Kg',
-    appId: '1:133652858240:ios:666796fced0fc27f6aad65',
-    messagingSenderId: '133652858240',
-    projectId: 'ledcubeapp-db',
-    databaseURL: 'https://ledcubeapp-db-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'ledcubeapp-db.appspot.com',
-    iosClientId: '133652858240-i4k8ms1sprv2n2ptona8hd5cmm1b8b28.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAL-19-ZZ0eBLviaaddTkIKDZtt_SJ65AM',
+    appId: '1:937618905345:ios:5c39714ec5b6bdf43ca300',
+    messagingSenderId: '937618905345',
+    projectId: 'ledcube-b9645',
+    databaseURL: 'https://ledcube-b9645-default-rtdb.firebaseio.com',
+    storageBucket: 'ledcube-b9645.appspot.com',
     iosBundleId: 'com.example.ledcubeapp',
   );
 }

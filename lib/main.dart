@@ -1,19 +1,36 @@
-import 'dart:math';
-
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ledcubeapp/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase/db_instance.dart';
 import 'firebase_options.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+// Splash screen libs
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:page_transition/page_transition.dart';
+
+import 'pages/home.dart';
+import 'pages/login.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
+  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final Future<FirebaseApp> _fbApp = Firebase.initializeApp();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -22,81 +39,53 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FutureBuilder(
-        future: _fbApp,
-        builder: (context, snapshot) {
-          if(snapshot.hasError) {
-            print("ERROR FLUTTER: ${snapshot.error.toString()}");
-            return const Text("Something went wrong.");
+      home: AnimatedSplashScreen(
+        duration: 2000,
+        splash: SizedBox(
+          height: 300,
+          width: 300,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Gigalux",
+                  style: GoogleFonts.poppins(
+                    color: const Color.fromARGB(255, 241, 245, 255),
+                    fontSize: 36.0,
+                    fontWeight: FontWeight.w600,
+                  )
+                ),
+                Text(
+                  "Innovative Advertising",
+                  style: GoogleFonts.cookie(
+                    color: const Color.fromARGB(255, 241, 245, 255),
+                    fontSize: 19.0,
+                    fontWeight: FontWeight.w400,
+                  )
+                ),
+              ]
+            ),
+          ),
+        ),
+        splashTransition: SplashTransition.fadeTransition,
+        pageTransitionType: PageTransitionType.fade,
+        backgroundColor: Colors.blue,
+        nextScreen: FutureBuilder(
+          future: _fbApp,
+          builder: (context, snapshot) {
+            if(snapshot.hasError) {
+              return const Text("Something went wrong.");
+            }
+            else if(snapshot.hasData){
+              return const LoginPage();
+            }
+            else {
+              return const Center(child: CircularProgressIndicator());
+            }
           }
-          else if(snapshot.hasData){
-            return const MyHomePage(title: "LED Cube App");
-          }
-          else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        }
+        ),
       )
     );
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  final db = FirebaseDatabase.instance.ref();
-
-  @override
-  Widget build(BuildContext context) {
-    // final testRef = db.child("test");
-    final testRefChild = db.child("ledState");
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: defaultPadding),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // ElevatedButton(
-              //   onPressed: () {
-              //     testRef.set("Hello World ${Random().nextInt(100)}");
-              //   },
-              //   child: Text("Send to Firebase")
-              // ),
-              const SizedBox(height: 5.0),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    testRefChild
-                      .set({
-                        'on': true,
-                        'off': false,
-                      });
-                  } catch (e) {
-                    print("ERROR: $e");
-                  }
-                },
-                child: Text("Set LED State")
-              ),
-            ],
-          )
-        )
-      )
-    );
-  }
-
-  
 }

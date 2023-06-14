@@ -1,44 +1,27 @@
 {
   "project_info": {
-    "project_number": "133652858240",
-    "firebase_url": "https://ledcubeapp-db-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "ledcubeapp-db",
-    "storage_bucket": "ledcubeapp-db.appspot.com"
+    "project_number": "937618905345",
+    "firebase_url": "https://ledcube-b9645-default-rtdb.firebaseio.com",
+    "project_id": "ledcube-b9645",
+    "storage_bucket": "ledcube-b9645.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:133652858240:android:d9e4b5d1ab1fa9e56aad65",
+        "mobilesdk_app_id": "1:937618905345:android:413f039a8c7735223ca300",
         "android_client_info": {
           "package_name": "com.example.ledcubeapp"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "133652858240-t03unvnheabochhs2u83hfm63r7adi1t.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDcJrL9QMMa5F1rGGBHW4InldEDTvGDoFg"
+          "current_key": "AIzaSyBQzYwXsz0OeG4ZETXuMOgyEWRw37-oKqM"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "133652858240-t03unvnheabochhs2u83hfm63r7adi1t.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "133652858240-i4k8ms1sprv2n2ptona8hd5cmm1b8b28.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.ledcubeapp"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
