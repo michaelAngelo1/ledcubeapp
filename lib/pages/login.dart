@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
         automaticallyImplyLeading: false,
         title: Center(
           child: Text(
-            "Gigalux",
+            "Coobie",
             style: GoogleFonts.poppins(
               fontSize: 18.0,
               fontWeight: FontWeight.w600,

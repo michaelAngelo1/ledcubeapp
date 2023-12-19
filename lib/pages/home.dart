@@ -7,6 +7,8 @@ import 'package:ledcubeapp/controller/handle_choose_animation.dart';
 import 'package:ledcubeapp/controller/handle_play_animation.dart';
 import 'package:ledcubeapp/model/indicator_rtdb_model.dart';
 import 'package:ledcubeapp/model/selected_rtdb_model.dart';
+import 'dart:async';
+import 'package:video_player/video_player.dart';
 
 // Firestore global instance
 final db = FirebaseFirestore.instance;
@@ -20,50 +22,102 @@ Future<List<String>> getDocumentID() async {
 
 Future<Object> isSelectedAnimation(DatabaseReference ledStateChild, String animation) async {
   final snap = await ledStateChild.get();
-  return snap.value!;  
+  return snap.value!;
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({Key? key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   final rtdb = FirebaseDatabase.instance.ref();
-  late Future<List<String>> animationList;
+  late StreamController<List<String>> _animationListController;
+  late Stream<List<String>> _animationListStream;
+  late DatabaseReference ledStateChild;
+  late DatabaseReference indicatorChild;
 
   @override
   void initState() {
-    super.initState(); 
-    animationList = getDocumentID();
-    Indicator.indicatorOnValueListen(rtdb.child("ledState"));
+    super.initState();
+    _animationListController = StreamController<List<String>>.broadcast();
+    _animationListStream = _animationListController.stream;
+    ledStateChild = rtdb.child("ledState");
+    indicatorChild = rtdb.child("ledState");
+    Indicator.indicatorOnValueListen(indicatorChild);
     Selected.selectedOnValueListen(rtdb.child('ledState'));
+    _updateAnimationList();
+
+    // Listen for changes in Firestore
+    db.collection("LAMBDA_8").snapshots().listen((event) {
+      _updateAnimationList();
+    });
   }
 
   @override
+  void dispose() {
+    _animationListController.close();
+    super.dispose();
+  }
+
+  Future<void> _updateAnimationList() async {
+    try {
+      List<String> animations = await getDocumentID();
+      _animationListController.add(animations);
+    } catch (e) {
+      // Handle error
+      print("Error updating animation list: $e");
+    }
+  }
+
+  double containerHeight = 25.0;
+
+  @override
   Widget build(BuildContext context) {
-    final ledStateChild = rtdb.child("ledState");
-    final indicatorChild = rtdb.child("ledState");
-    
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 80,
+        backgroundColor: Colors.blue[900],
+        elevation: 0,
         automaticallyImplyLeading: false,
-        title: Center(
-          child: Text(
-            "Gigalux",
-            style: GoogleFonts.poppins(
-              fontSize: 18.0,
-              fontWeight: FontWeight.w600,
-            )
-          ),
+        centerTitle: true,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 12.0),
+            Text(
+              "Coobie",
+              style: GoogleFonts.poppins(
+                fontSize: 22.0,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              "by JL MA JB",
+              style: GoogleFonts.poppins(
+                fontSize: 14.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ]
         ),
       ),
-      body: SizedBox(
+      body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Colors.blue,
+              Colors.red,
+            ],
+          )
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
           child: Column(
@@ -75,30 +129,53 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: GoogleFonts.montserrat(
                   fontSize: 15.0,
                   fontWeight: FontWeight.w600,
-                  color: Colors.blue,
-                )
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 10.0),
               Expanded(
-                child: FutureBuilder<List<String>>(
-                  future: animationList,
+                child: StreamBuilder<List<String>>(
+                  stream: _animationListStream,
                   builder: (context, snapshot) {
-                    if(snapshot.hasData) {
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(8), 
+                    if (snapshot.hasData) {
+                      return GridView.builder(
+                        padding: const EdgeInsets.all(8),
                         itemCount: snapshot.data!.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1,
+                          mainAxisSpacing: 30,
+                          crossAxisSpacing: 30,
+                        ),
                         itemBuilder: (context, index) {
                           return Container(
                             margin: const EdgeInsets.only(bottom: defaultPadding),
-                            height: 75,
+                            height: containerHeight,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(35),
-                              color: Selected.animation == snapshot.data![index] ? Colors.green : Colors.blue,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 3.0,
+                              ),
+                              color: Selected.animation == snapshot.data![index]
+                                  ? Color(0xffad9c00)
+                                  : Colors.blue[900],
                             ),
                             child: InkWell(
                               onTap: () => setState(() {
-                                HandleChooseAnimation.handleChooseAnimation(ledStateChild, snapshot.data![index]);
+                                HandleChooseAnimation.handleChooseAnimation(
+                                  ledStateChild, snapshot.data![index]);
+                                
                               }),
+                              onLongPress: () {
+                                // Change the height on long press, for example, double the original height
+                                setState(() {
+                                  if (Selected.animation == snapshot.data![index]) {
+                                    // You can adjust the logic based on your needs
+                                    containerHeight = 30; // Set the desired height
+                                  }
+                                });
+                              },
                               child: Row(
                                 children: [
                                   Padding(
@@ -109,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         color: Colors.white,
                                         fontSize: 15.0,
                                         fontWeight: FontWeight.w600,
-                                      )
+                                      ),
                                     ),
                                   ),
                                   Expanded(
@@ -117,35 +194,36 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: Container(
                                       color: Colors.transparent,
                                       width: 100,
-                                    )
+                                    ),
                                   ),
                                 ],
-                              )
-                            )
+                              ),
+                            ),
                           );
-                        }
+                        },
                       );
                     }
                     return const Center(child: CircularProgressIndicator());
-                  }
+                  },
                 ),
               )
             ],
-          )
-        )
+          ),
+        ),
       ),
       floatingActionButton: SizedBox(
         width: 70,
         height: 70,
         child: FittedBox(
           child: FloatingActionButton(
+            splashColor: Color(0xffad9c00),
             onPressed: () => setState(() {
               HandlePlayAnimation.handlePlayAnimation(indicatorChild);
             }),
-            backgroundColor: Indicator.on ? Colors.white : Colors.blue,
+            backgroundColor: Indicator.on ? Color(0xffad9c00) : Colors.blue[900] ,
             child: Icon(
               Indicator.on ? Icons.pause : Icons.play_arrow,
-              color: Indicator.on ? Colors.blue : Colors.white,
+              color: Colors.white,
             ),
           ),
         ),
