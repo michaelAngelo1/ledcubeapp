@@ -41,7 +41,7 @@ class _SignUpPageState extends State<SignUpPage> {
         automaticallyImplyLeading: false,
         title: Center(
           child: Text(
-            "Gigalux",
+            "Coobie",
             style: GoogleFonts.poppins(
               fontSize: 18.0,
               fontWeight: FontWeight.w600,

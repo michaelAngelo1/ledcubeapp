@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase/db_instance.dart';
@@ -17,7 +16,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
   );
-  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
   runApp(MyApp());
 }
 
@@ -35,6 +33,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -49,7 +48,7 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  "Gigalux",
+                  "Coobie",
                   style: GoogleFonts.poppins(
                     color: const Color.fromARGB(255, 241, 245, 255),
                     fontSize: 36.0,
@@ -60,7 +59,16 @@ class _MyAppState extends State<MyApp> {
                   "Innovative Advertising",
                   style: GoogleFonts.cookie(
                     color: const Color.fromARGB(255, 241, 245, 255),
-                    fontSize: 19.0,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w400,
+                  )
+                ),
+                const SizedBox(height: 50.0),
+                Text(
+                  "version 2.0",
+                  style: GoogleFonts.poppins(
+                    color: const Color.fromARGB(255, 241, 245, 255),
+                    fontSize: 14.0,
                     fontWeight: FontWeight.w400,
                   )
                 ),
@@ -70,7 +78,7 @@ class _MyAppState extends State<MyApp> {
         ),
         splashTransition: SplashTransition.fadeTransition,
         pageTransitionType: PageTransitionType.fade,
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color(0xff0D47A1),
         nextScreen: FutureBuilder(
           future: _fbApp,
           builder: (context, snapshot) {
@@ -78,7 +86,7 @@ class _MyAppState extends State<MyApp> {
               return const Text("Something went wrong.");
             }
             else if(snapshot.hasData){
-              return const LoginPage();
+              return const MyHomePage();
             }
             else {
               return const Center(child: CircularProgressIndicator());
