@@ -33,6 +33,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -85,7 +86,7 @@ class _MyAppState extends State<MyApp> {
               return const Text("Something went wrong.");
             }
             else if(snapshot.hasData){
-              return const LoginPage();
+              return const MyHomePage();
             }
             else {
               return const Center(child: CircularProgressIndicator());

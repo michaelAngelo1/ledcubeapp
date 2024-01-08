@@ -45,6 +45,7 @@ dependencies:
   http: ^0.13.6
   rxdart: ^0.27.7
   video_player: ^2.8.1
+  appinio_video_player: ^1.2.2
   # firebase_database: ^10.2.1
   # zwidget: ^0.0.2
   # three_dart: ^0.0.16
@@ -73,9 +74,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - assets/cube/cube.obj
-  #   - assets/cube/cube1.obj
+  assets:
+    - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
